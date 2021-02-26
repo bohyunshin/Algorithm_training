@@ -4,7 +4,7 @@ def quick_sort(array, start, end):
     if start >= end:
         return
     pivot = start
-    left = pivot + 1
+    left = start + 1
     right = end
     while left <= right:
         while left <= end and array[pivot] >= array[left]:
