@@ -41,7 +41,6 @@ while True:
             if whether_moving != 0:
 
                 index += 1
-    print(visited)
     alliance2loc = {}
     for i in range(N):
         for j in range(N):
