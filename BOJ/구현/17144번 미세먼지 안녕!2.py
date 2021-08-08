@@ -12,6 +12,7 @@ dx = [-1,1,0,0]
 dy = [0,0,-1,1]
 for _ in range(t):
     B = [[0]*c for _ in range(r)]
+    # 먼지 증식하기.
     for i in range(r):
         for j in range(c):
             if (i,j) in air:
@@ -29,7 +30,7 @@ for _ in range(t):
                     B[nx][ny] += dust
             B[i][j] += A[i][j] - dust*count
 
-    # 공기청정기 위쪽 순환
+    ##### 공기청정기 위쪽 순환
     x,y =  air[0]
     y += 1
 
@@ -40,25 +41,28 @@ for _ in range(t):
 
         if (x,y)  == air[0]:
             break
-
+        # 아래쪽 가로 방향 순환.
         if x == air[0][0] and y < c-1:
             C[x][y+1] = B[x][y]
             y += 1
             continue
+        # 오른쪽 세로 방향 순환.
         if 1 <= x <= air[0][0] and y == c-1:
             C[x-1][y] = B[x][y]
             x -= 1
             continue
+        # 위쪽 가로 방향 순환.
         if x == 0 and 1 <= y <= c-1:
             C[x][y-1] = B[x][y]
             y -= 1
             continue
+        # 왼쪽 세로 방향 순환.
         if 0 <= x < air[0][0] and y == 0:
             C[x+1][y] = B[x][y]
             x += 1
             continue
 
-    # 공기청소기 아래쪽 순환
+    ##### 공기청소기 아래쪽 순환
     a, b = air[1]
     b += 1
     # 공기 청소기 바로 옆 없애기
