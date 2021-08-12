@@ -8,10 +8,10 @@ def append_queue(na,nb,nc, a,b,c):
     if (na,nb,nc) not in myhash.keys():
         myhash[(na,nb,nc)] = myhash[(a,b,c)] + 1
         q.append((na,nb,nc))
-    else:
-        if myhash[(na,nb,nc)] > myhash[(a,b,c)] + 1:
-            myhash[(na, nb, nc)] = myhash[(a, b, c)] + 1
-            q.append((na, nb, nc))
+    # else:
+    #     if myhash[(na,nb,nc)] > myhash[(a,b,c)] + 1:
+    #         myhash[(na, nb, nc)] = myhash[(a, b, c)] + 1
+    #         q.append((na, nb, nc))
 
 while q:
     a,b,c = q.popleft()
