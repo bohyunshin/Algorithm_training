@@ -1,70 +1,29 @@
 from collections import deque
-k = int(input())
-w,h = map(int, input().split())
-array = []
-for _ in range(h):
-    array.append( list(map(int,input().split())) )
-
-dx_horse = [ -1,-2,-2,-1,1,2,2,1 ]
-dy_horse = [ -2,-1,1,2,2,1,-1,-2 ]
-
-dx_monkey = [-1,1,0,0]
-dy_monkey = [0,0,-1,1]
-
+dx = [0,0,1,-1,1,-1,1,-1,0]
+dy = [1,-1,0,0,1,1,-1,-1,0]
+n = 8
+a = [input() for _ in range(n)]
 q = deque()
-start = (0,0)
-q.append(start)
-myhash = {}
-horse_nums = {}
-for i in range(h):
-    for j in range(w):
-        myhash[(i,j)] = []
-        horse_nums[(i, j)] = []
+check = [[[False]*(n+1) for j in range(n)] for i in range(n)]
+check[7][0][0] = True
+q.append((7,0,0))
+ans = False
 
-myhash[start].append( (k,0) )
-a = 0
 while q:
-    a += 1
-    x,y = q.popleft()
-    if (x == h-1 and y == h-1) or a >= 1e6:
-        break
-    for k,dist in myhash[(x,y)]:
-        if k >= 1:
-            for i in range(len(dx_horse)):
-                nx = x + dx_horse[i]
-                ny = y + dy_horse[i]
-                if 0 <= nx < h and 0 <= ny < w:
-                    if array[nx][ny] != 1:
+    x,y,t = q.popleft()
+    if x == 0 and y == 7:
+        ans = True
+    for k in range(9):
+        nx,ny = x+dx[k],y+dy[k]
+        nt = min(t+1, 8)
+        if 0 <= nx < n and 0 <= ny < n:
+            if nx-t >= 0 and a[nx-t][ny] == '#':
+                continue
+            if nx-t-1 >= 0 and a[nx-t-1][ny] == '#':
+                continue
+            if check[nx][ny][nt] == False:
+                check[nx][ny][nt] = True
+                q.append((nx,ny,nt))
 
-                        if len(myhash[(nx,ny)]) == 0:
-                            myhash[(nx,ny)].append( (k-1, dist + 1) )
-                            q.append((nx,ny))
-                        else:
-                            # if myhash[(nx, ny)] > myhash[(x, y)] + 1:
-                            #     myhash[(nx, ny)] = myhash[(x, y)] + 1
-                            #     q.append((nx,ny))
-                            #     horse_nums[(nx, ny)] = k - 1
-                            if (k - 1, dist + 1) not in myhash[(nx,ny)]:
-                                myhash[(nx, ny)].append((k - 1, dist + 1))
-                                q.append((nx,ny))
-        for i in range(len(dx_monkey)):
-            nx = x + dx_monkey[i]
-            ny = y + dy_monkey[i]
-            if 0 <= nx < h and 0 <= ny < w:
-                if array[nx][ny] != 1:
-                    if len(myhash[(nx, ny)]) == 0:
-                        myhash[(nx, ny)].append((k, dist + 1))
-                        q.append((nx, ny))
-                    else:
-                        # if myhash[(nx, ny)] > myhash[(x, y)] + 1:
-                        #     myhash[(nx, ny)] = myhash[(x, y)] + 1
-                        #     q.append((nx,ny))
-                        #     horse_nums[(nx, ny)] = k - 1
-                        if (k, dist + 1) not in myhash[(nx, ny)]:
-                            myhash[(nx, ny)].append((k, dist + 1))
-                            q.append((nx, ny))
-
-if (h-1,w-1) not in myhash.keys():
-    print(-1)
-else:
-    print(sorted(myhash[(h-1,w-1)], key=lambda x: x[1])[0][1])
+print(1 if ans else 0)
+print(check[0][7])
