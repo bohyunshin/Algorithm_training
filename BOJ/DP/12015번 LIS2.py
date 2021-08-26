@@ -9,4 +9,4 @@ for i in A:
 		dp.append(i)
 	else:
 		dp[index] = i
-print(len(dp))
+print(len(dp)) 

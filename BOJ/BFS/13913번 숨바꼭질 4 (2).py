@@ -32,3 +32,5 @@ while k != n:
     answer.append(myhash[k])
     k = myhash[k]
 print(' '.join(map(str, answer[::-1])))
+
+print(myhash)
