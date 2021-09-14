@@ -1,83 +1,64 @@
-def check(dct, n):
-    for key in dct.keys():
-        x, y = key
-        # 기둥, 보 둘다 없으면 확인할 필요 없음.
-        if dct[key][0] == 0 and dct[key][1] == 0:
+import heapq as hq
+
+
+def solution(n, start, end, roads, traps):
+    edges = [[] for _ in range(n + 1)]
+
+    trap_idx = {t: n for n, t in enumerate(traps)}
+    traps = set(traps)
+
+    # 역방향은 마이너스간선을 넣어줘서 방향을 구분한다.
+    for v1, v2, w in roads:
+        edges[v1].append((v2, w))
+        edges[v2].append((v1, -w))
+
+    # heap :(distance, 현재 위치, 현재 상태)
+    heap = [(0, start, 0)]
+    dist = {}
+
+    # 다익스트라
+    while heap:
+
+        # 원소 중 가장 이동 거리가 짧은 경로를 갖고 온다.
+        dis, here, state = hq.heappop(heap)
+
+        # 이미 현재 상태를 방문했다면 아래의 과정을 생략한다.
+        if dist.get((here, state), None):
             continue
-        # 기둥이 조건에 맞는지 확인
-        if dct[key][0] == 1:
-            # 기둥이 바닥에 있거나, 기둥 밑에 보가 있거나 기둥 위에 있으면 괜찮.
-            if y == 0:
-                continue
-            # 기둥 아래에 기둥이 있을때도 오키
-            if y >= 1 and dct[(x, y - 1)][0] == 1:
-                continue
-            # 기둥이 왼쪽 끝에 있다면
-            if x == 0:
-                if dct[(x, y)][1] == 1:
-                    continue
-                else:
-                    return False
-            elif x == n:
-                if dct[(x - 1, y)][1] == 1:
-                    continue
-                else:
-                    return False
-            else:
-                if dct[(x - 1, y)][1] == 1 or dct[(x, y)][1] == 1:
-                    continue
-                else:
-                    return False
-        # 보가 조건에 맞는지 확인
-        if dct[key][1] == 1:
-            # 보 양 옆 중 하나가 기둥에 걸쳐있거나, 보 양 옆 모두가 보에 연결되어 있으면 괜찮.
-            # 우선 양 옆 중 하나가 기둥에 걸쳐있는 경우 체크
-            if (dct[(x, y - 1)][0] == 1 or dct[(x + 1, y - 1)][0] == 1):
-                continue
-            # 위에서 체크했는데 보가 왼쪽 끝에 있거나 오른쪽 끝에 있으면 불가능한 경우임.
-            if x == 0 or x == n - 1:
-                return False
-            else:
-                if dct[(x - 1, y)][1] == 1 and dct[(x + 1, y)][1] == 1:
-                    continue
-                else:
-                    False
-    return True
 
+        # 현재 상태 기록
+        dist[(here, state)] = dis
 
-def solution(n, build_frame):
-    dct = {}
-    ans = []
-    for i in range(n + 1):
-        for j in range(n + 1):
-            dct[(i, j)] = {0: 0, 1: 0}
-    for x, y, a, b in build_frame:
+        # 현재 위치가 목적지라면 거리 반환
+        if here == end: return dis
 
-        if b == 1:
-            # 설치 해봄
-            dct[(x, y)][a] += 1
-            # 확인 후 괜찮으면 ㄲ, 이상하면 다시 삭제함.
-            if check(dct, n) == False:
-                dct[(x, y)][a] -= 1
+        direction = 1  # 방향을 나타내는 변수로 현재 위치가 함정일 때 눌렸는지 안눌렸는지를 나타낸다.
+        # 만약 현재 위치가 트랩이고 그 트랩을 밟은 상태라면 direction을 바꿔준다.
+        if here in traps and (state & (1 << trap_idx[here])):
+            direction *= -1
+            # 이렇게 하는 이유 : 눌려 있다면 here로 들어오는 간선들의 방향이 바뀌었을 것
 
-        elif b == 0:
-            # 삭제 해봄
-            dct[(x, y)][a] -= 1
-            # 확인후 괜찮으면 ㄲ, 이상하면 다시 설치함.
-            if check(dct, n) == False:
-                dct[(x, y)][a] += 1
+        for there, w in edges[here]:  # 인접한 노드에 대해서
+            # 다음에 방문할 노드가 트랩이고 현재 그 트랩을 한번 방문했다면 가중치 값의 부호를 바꿔준다.
+            if there in traps and (state & (1 << trap_idx[there])):
+                w *= -1
 
-    for key in dct.keys():
-        x, y = key
-        # 기둥 있는지 확인
-        if dct[key][0] == 1:
-            ans.append([x, y, 0])
-        # 보 있는지 확인
-        if dct[key][1] == 1:
-            ans.append([x, y, 1])
-    ans.sort(key=lambda x: (x[0], x[1], x[2]))
-    return ans
+                """
+                아래와 같이 4가지 경우를 나누어주기 위함
+                1. here가 눌려 있지 않고 there가 눌려 있지 않다면 정방향 (w가 양수, direction 양수)
+                2. here가 눌려 있고 there가 눌려있지 않다면 역방향 		(w가 음수, direction 음수)
+                3. here가 눌려 있지 않고 there만 눌려 있다면 정방향 	(w가 양수, direction 양수)
+                4. here도 눌려 있고 there도 눌려 있다면 정방향  		 (w가 음수, direction 음수)
+                """
 
-n = 5
-build_frame = [[0, 0, 0, 1], [2, 0, 0, 1], [4, 0, 0, 1], [0, 1, 1, 1], [1, 1, 1, 1], [2, 1, 1, 1], [3, 1, 1, 1], [2, 0, 0, 0], [1, 1, 1, 0], [2, 2, 0, 1]]
-solution(n,build_frame)
+            # 현재 방향과 가중치 값의 곱이 양수라면
+            if w * direction > 0:
+                new_state = state
+                if there in traps:
+                    if state & (1 << trap_idx[there]):  # 트랩을 밟지 않은 상태로 바꿔준다.
+                        new_state = state & ~(1 << trap_idx[there])
+                    else:  # 트랩을 밟은 상태로 바꿔준다.
+                        new_state = state | (1 << trap_idx[there])
+
+                hq.heappush(heap, (dis + w * direction, there, new_state))
+        return
