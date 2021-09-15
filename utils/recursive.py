@@ -1,5 +1,5 @@
 def recursive(index,m,lst):
-    global ans
+    global ans,a,order,c
     if index >= m:
         ans.append(a[:])
         return
@@ -16,12 +16,18 @@ def recursive(index,m,lst):
             c[i][j] = False
             order[i] = False
 
-a = [0]*3
-order = [False]*3
-c = [[False]*2 for _ in range(3)]
-lst = [[(1,2),(3,4)],[(5,6),(7,8)],[(9,10),(11,12)]]
-ans = []
+def main_recursive(lst):
+    global ans,a,order,c
+    n = len(lst)
+    m = len(lst[0])
+    ans = []
+    a = [0]*n
+    order = [False]*n
+    c = [[False]*m for _ in range(n)]
+    recursive(0,n,lst)
+    return ans
 
-recursive(0,3,lst)
+lst = [[(1,2),(3,4)],[(5,6),(7,8)],[(9,10),(11,12)]]
+ans = main_recursive(lst)
 for i in ans:
     print(i)
