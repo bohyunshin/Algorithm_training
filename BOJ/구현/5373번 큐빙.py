@@ -9,7 +9,7 @@ for i in range(9):
         sero.append(['y','y','y'])
 U = [['w','w','w'] for _ in range(3)]
 D = [['y','y','y'] for _ in range(3)]
-def move(what,direction):
-    if what == 'L':
-        if direction == '+':
+# def move(what,direction):
+#     if what == 'L':
+#         if direction == '+':
 
