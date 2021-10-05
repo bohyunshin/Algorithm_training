@@ -1,84 +1,58 @@
-from collections import deque
-class fish:
-    def __init__(self,num,d,loc):
-        self.num = num
-        self.d = d
-        self.loc = loc
-        # self.shark = shark
-space = [[0]*4 for _ in range(4)]
-number = [0]*(17)
-for i in range(4):
-    row = list(map(int, input().split()))
-    for j in range(0,7,2):
-        num,d = row[j:j+2]
-        f = fish(num,d-1,(i,j//2))
-        space[i][j//2] = f
-        number[num] = f
+from copy import deepcopy
+
+n = 4
 dx = [-1,-1,0,1,1,1,0,-1]
 dy = [0,-1,-1,-1,0,1,1,1]
-def move_fish(number,space,shark):
-    for i in range(1,17):
-        # 빈칸이면 패쓰.
-        if number[i] == 0:
-            continue
-        f = number[i]
-        fish_num,d,(x,y) = f.num, f.d, f.loc
 
-        for k in range(d,d+8+1):
-            k = k % 8
-            nx,ny = x+dx[k],y+dy[k]
-            if 0 <= nx < 4 and 0 <= ny < 4 and (nx,ny) != shark.loc:
-                space[x][y].d = k
-                number[i].d = k
-                if space[nx][ny] != 0:
-                    space[nx][ny].loc = (x,y)
-                    number[space[nx][ny].num].loc = (x,y)
-                if space[x][y] != 0:
-                    space[x][y].loc = (nx,ny)
-                    number[space[x][y].num].loc = (nx,ny)
-                space[nx][ny], space[x][y] = space[x][y], space[nx][ny]
+def go(num, direction, x, y, d):
+    for who in range(1, n*n+1):
+        f = False
+        for i in range(n):
+            for j in range(n):
+                if num[i][j] == who:
+                    for k in range(8):
+                        nx = i+dx[direction[i][j]]
+                        ny = j+dy[direction[i][j]]
+                        if 0 <= nx < n and 0 <= ny < n and num[nx][ny] >= 0 and (not (nx == x and ny == y)):
+                            num[i][j], num[nx][ny] = num[nx][ny], num[i][j]
+                            direction[i][j], direction[nx][ny] = direction[nx][ny], direction[i][j]
+                            f = True
+                            break
+                        else:
+                            direction[i][j] += 1
+                            direction[i][j] %= 8
+                if f:
+                    break
+            if f:
                 break
-    return number,space
-        # print(f'### when i=={i}')
-        # for j in range(4):
-        #     print([f.num for f in space[j]])
-        # print()
-        # for j in range(4):
-        #     print([f.d for f in space[j]])
-        # print()
-        # print(number[3].loc)
-        # print()
-def move_shark(space,shark):
-    (x,y),d = shark.loc, shark.d
-    result = []
-    while True:
-        x += dx[d]
-        y += dy[d]
-        if 0 <= x < 4 and 0 <= y < 4:
-            pass
-        else:
-            x -= dx[d]
-            y -= dy[d]
-            break
-        if space[x][y] != 0:
-            result.append((x,y))
-    return result
-q = deque()
-shark = space[0][0]
-space[0][0] = 0
-number[shark.num] = 0
-eaten = shark.num
-number,space = move_fish(number,space,shark)
-shark_move_candidates = move_shark(space,shark)
-for x,y in shark_move_candidates:
+    ans = 0
+    sx = x+dx[d]
+    sy = y+dy[d]
+    while 0 <= sx < n and 0 <= sy < n:
+        if num[sx][sy] != 0:
+            temp = num[sx][sy]
+            num[sx][sy] = 0
+            cur = temp + go(deepcopy(num), deepcopy(direction), sx, sy, direction[sx][sy])
+            if ans < cur:
+                ans = cur
+            num[sx][sy] = temp
+        sx += dx[d]
+        sy += dy[d]
+
+    return ans
+
+num = [[0]*n for _ in range(n)]
+direction = [[0]*n for _ in range(n)]
+
+for i in range(n):
+    temp = list(map(int,input().split()))
+    for j in range(n):
+        num[i][j] = temp[2*j]
+        direction[i][j] = temp[2*j+1]
+        direction[i][j] -= 1
+ans = num[0][0]
+num[0][0] = 0
+ans += go(num, direction, 0, 0, direction[0][0])
+print(ans)
 
 
-
-
-
-
-for j in range(4):
-    print([f.num if f != 0 else f for f in space[j]])
-print()
-for j in range(4):
-    print([f.d if f != 0 else f for f in space[j]])

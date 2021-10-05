@@ -23,7 +23,9 @@ def main_recursive(lst):
     ans = []
     a = [0]*n
     order = [False]*n
-    c = [[False]*m for _ in range(n)]
+    c = []
+    for i in range(n):
+        c.append([False] * len(lst[i]))
     recursive(0,n,lst)
     return ans
 
