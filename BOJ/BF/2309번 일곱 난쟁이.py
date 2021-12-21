@@ -22,3 +22,5 @@ go(0,m)
 ans.sort()
 for i in ans:
     print(i)
+
+# test
