@@ -1,6 +1,6 @@
 #! /bin/sh
 
-message=""
+read message
 
 if ["$1" = ""]
 then message="null commit message"
