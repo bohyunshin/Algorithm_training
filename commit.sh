@@ -1,10 +1,9 @@
 #! /bin/sh
 
-read message
+message="$1"
 
-if ["$1" = ""]
+if [$1 = ""]
 then message="null commit message"
-else message=$1
 fi
 
 git add .
