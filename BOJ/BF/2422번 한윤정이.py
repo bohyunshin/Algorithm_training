@@ -1,37 +1,33 @@
+from collections import defaultdict
 n,m = map(int,input().split())
-options = []
+options = defaultdict(bool)
 for _ in range(m):
     x,y = map(int,input().split())
-    options.append((x,y))
+    x -= 1
+    y -= 1
+    tmp = sorted([x,y])
+    options[tuple(tmp)] = True
 a = [-1]*3
 c = [False]*n
 ans = 0
-def go(index):
+def go(index,i):
     global ans
     if index == 3:
         ans += 1
-        print(a)
         return
-    for i in range(n):
-        if c[i]:
-            continue
-        ices = [j for j in a if j != -1]
-        FLAG = False
-        for option in options:
-            x,y = option
-            for ice in ices:
-                # print(set([x,y]), set([ice,i]), set([x,y]) == set([ice,i]))
-                if set([x,y]) == set([ice,i]):
-                    FLAG = True
-                    break
-            if FLAG:
-                break
-        if FLAG == False:
-            c[i] = True
-            a[index] = i
-            FLAG_ = FLAG
-            go(index+1)
-            c[i] = False
-            FLAG = FLAG_
-go(0)
+    if i >= n:
+        return
+    FLAG = False
+    ices = [j for j in a if i != -1]
+    for ice in ices:
+        tmp = tuple(sorted([ice,i]))
+        if options[tmp]:
+            FLAG = True
+            break
+    if FLAG == False:
+        a[index] = i
+        go(index+1,i+1)
+    a[index] = -1
+    go(index,i+1)
+go(0,0)
 print(ans)
