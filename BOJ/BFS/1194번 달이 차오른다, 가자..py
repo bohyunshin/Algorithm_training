@@ -8,14 +8,12 @@ for i in range(n):
     for j in range(m):
         if a[i][j] == '0':
             x, y = i, j
-# visited = [[[-1]*7 for _ in range(m)] for _ in range(n)]
 visited = {}
 keys = ['a', 'b', 'c', 'd', 'e', 'f']
 doors = ['A', 'B', 'C', 'D', 'E', 'F']
 dx = [-1, 1, 0, 0]
 dy = [0, 0, -1, 1]
 q = deque()
-# visited[x][y][6] = 0
 visited[(x, y, '')] = 0
 q.append((x, y, ''))
 while q:
