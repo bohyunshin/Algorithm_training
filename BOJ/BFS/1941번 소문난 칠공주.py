@@ -7,7 +7,6 @@ for _ in range(n):
 dx = [-1,1,0,0]
 dy = [0,0,-1,1]
 check = [[False]*n for _ in range(n)]
-student = ['']*m
 # def bfs(x,y):
 #     cnt = 0
 #     q = deque()
@@ -37,11 +36,11 @@ student = ['']*m
 #                     visited[nx][ny][nS] = visited[x][y][S] + 1
 #     return cnt
 # print(bfs(1,0))
-ans = 0
-def go(x,y,index):
+ans = set()
+def go(x,y,index,coord,here=False):
     global ans
     if index == m:
-        print(student)
+        # print(student)
         S = 0
         Y = 0
         for k in range(m):
@@ -50,16 +49,36 @@ def go(x,y,index):
             else:
                 Y += 1
         if S >= 4:
-            ans += 1
+            coord.sort()
+            ans.add(tuple(coord))
         return
-    student[index] = a[x][y]
+    if (x,y) in coord:
+        return
+    # if (x,y) == (2,1):
+    #     print(coord)
+    tmp = coord.copy()
+    if here == False:
+        student[index] = a[x][y]
+    tmp.append((x,y))
     for i in range(4):
         nx,ny = x+dx[i],y+dy[i]
-        if 0 <= nx < n and 0 <= ny < n and check[nx][ny] == False:
-            go(nx,ny,index+1)
-student[0] = a[1][0]
-go(1,0,1)
-print(ans)
+        if 0 <= nx < n and 0 <= ny < n:
+            go(nx,ny,index+1,tmp)
+
+            # if (nx,ny) in coord:
+            #     # go(x,y,index+1,tmp)
+            #     pass
+            # else:
+            #     go(nx,ny,index+1,tmp)
+    go(x,y,index+1,tmp,True)
+student = ['']*m
+go(1,0,0,[])
+# for i in range(n):
+#     for j in range(n):
+#         student = ['']*m
+#         go(i,j,0,[])
+for i in ans:
+    print(i)
 
 # ans = 0
 # for i in range(n):
