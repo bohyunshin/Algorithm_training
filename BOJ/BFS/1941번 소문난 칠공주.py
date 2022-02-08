@@ -1,88 +1,66 @@
-from collections import deque
 n = 5
 m = 7
 a = []
 for _ in range(n):
-    a.append([i for i in input()])
+    a.append(input())
+def check(num):
+    global available
+    r = num // 5
+    c = num % 5
+    for d in range(4):
+        nr = r + dx[d]
+        nc = c + dy[d]
+        if not (0 <= nr < 5 and 0 <= nc < 5) or visited[nr][nc]:
+            continue
+        nextNum = nr*5+nc   # 다음 숫자
+        if nextNum in chosen:    # p에 있다면 방문표시, 재귀로 다음 숫자 넘겨 재검사
+            visited[nr][nc] = True
+            available += 1
+            check(nextNum)
+def go(i,index,ycnt):
+    global available, visited, ans
+    # if ycnt >= 4 or i >= n**2하면,
+    # index == m이면서 i == n**2인 경우가 빠져서, 틀린답이 나온다.
+    if ycnt >= 4:
+        return
+    if index == m:
+        available = 1
+        visited = [[False]*n for _ in range(n)]
+        sx,sy = chosen[0] // n, chosen[0] % n
+        visited[sx][sy] = True
+        check(chosen[0])
+        if available == m:
+            ans += 1
+        return
+    if i >= n**2:
+        return
+    x, y = i // n, i % n
+    # i 선택하는 경우.
+    chosen[index] = i
+    if a[x][y] == 'S':
+        go(i + 1, index + 1, ycnt)
+    else:
+        go(i + 1, index + 1, ycnt + 1)
+    # i 선택하지 않는 경우.
+    chosen[index] = -1
+    go(i + 1, index, ycnt)
+chosen = [-1]*m
 dx = [-1,1,0,0]
 dy = [0,0,-1,1]
-check = [[False]*n for _ in range(n)]
-# def bfs(x,y):
-#     cnt = 0
-#     q = deque()
-#     visited = [[[-1]*8 for _ in range(n)] for _ in range(n)]
-#     if a[x][y] == 'S':
-#         q.append((x,y,1))
-#         visited[x][y][1] = 0
-#     else:
-#         q.append((x,y,0))
-#         visited[x][y][0] = 0
-#     while q:
-#         x,y,S = q.popleft()
-#         if visited[x][y][S]+1 == 7:
-#             if S >= 4:
-#                 print(x,y,S)
-#                 cnt += 1
-#             continue
-#         for i in range(4):
-#             nx,ny = x+dx[i],y+dy[i]
-#             if 0 <= nx < n and 0 <= ny < n:
-#                 if a[nx][ny] == 'S':
-#                     nS = S+1
-#                 else:
-#                     nS = S
-#                 if visited[nx][ny][nS] == -1 and check[nx][ny] == False:
-#                     q.append((nx,ny,nS))
-#                     visited[nx][ny][nS] = visited[x][y][S] + 1
-#     return cnt
-# print(bfs(1,0))
-ans = set()
-def go(x,y,index,coord,here=False):
-    global ans
-    if index == m:
-        # print(student)
-        S = 0
-        Y = 0
-        for k in range(m):
-            if student[k] == 'S':
-                S += 1
-            else:
-                Y += 1
-        if S >= 4:
-            coord.sort()
-            ans.add(tuple(coord))
-        return
-    if (x,y) in coord:
-        return
-    # if (x,y) == (2,1):
-    #     print(coord)
-    tmp = coord.copy()
-    if here == False:
-        student[index] = a[x][y]
-    tmp.append((x,y))
-    for i in range(4):
-        nx,ny = x+dx[i],y+dy[i]
-        if 0 <= nx < n and 0 <= ny < n:
-            go(nx,ny,index+1,tmp)
+ans = 0
+go(0,0,0)
+print(ans)
 
-            # if (nx,ny) in coord:
-            #     # go(x,y,index+1,tmp)
-            #     pass
-            # else:
-            #     go(nx,ny,index+1,tmp)
-    go(x,y,index+1,tmp,True)
-student = ['']*m
-go(1,0,0,[])
-# for i in range(n):
-#     for j in range(n):
-#         student = ['']*m
-#         go(i,j,0,[])
-for i in ans:
-    print(i)
+"""
+YYYYY
+SSSSY
+YYYYY
+YYYYY
+YYYYY
 
-# ans = 0
-# for i in range(n):
-#     for j in range(n):
-#         ans += bfs(i,j)
-#         check[i][j] = True
-# print(ans)
+YYYYY
+SYYYY
+YYYYY
+YYYYY
+YYYYY
+"""

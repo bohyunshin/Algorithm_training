@@ -9,6 +9,9 @@ for i in range(n):
         if a[i][j] == '*':
             stars.append((i,j))
 stars = tuple(stars)
+if len(stars) == 1:
+    print(0)
+    exit()
 def check(x,y):
     global conn
     for k in range(4):
@@ -26,12 +29,13 @@ visited[stars] = 0
 q.append(stars)
 while q:
     stars = q.popleft()
-    conn = 1
+    stars = tuple(stars)
+    conn = 0
     v = [[False] * n for _ in range(n)]
     sx, sy = stars[0]
     check(sx, sy)
     if conn == len(stars):
-        print(stars)
+        # print(stars)
         print(visited[stars])
         break
     for i in range(len(stars)):
@@ -39,9 +43,16 @@ while q:
         for k in range(4):
             tmp = list(stars).copy()
             nx,ny = x+dx[k],y+dy[k]
-            if 0 <= nx < n and 0 <= ny < n:
+            if 0 <= nx < n and 0 <= ny < n and (nx,ny) not in stars:
                 tmp[i] = (nx,ny)
                 tmp = tuple(sorted(list(tmp)))
                 if tmp not in visited.keys():
                     visited[tmp] = visited[stars]+1
-                    q.append(tmp)
+                    q.append(list(tmp).copy())
+"""
+.....
+.....
+.....
+..*..
+.....
+"""
