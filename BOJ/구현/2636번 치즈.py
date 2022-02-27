@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(10**5)
 from collections import defaultdict
 n,m = map(int,input().split())
 a = [list(map(int,input().split())) for _ in range(n)]
@@ -25,6 +27,12 @@ def check():
             if a[i][j] == 1:
                 return True
     return False
+time = 0
+before = 0
+# for i in range(n):
+#     for j in range(m):
+#         if a[i][j] == 1:
+#             before += 1
 while check():
     visited = [[False] * m for _ in range(n)]
     slices = defaultdict(list)
@@ -37,12 +45,16 @@ while check():
                 cnt += 1
             if a[x][y] == 1:
                 cheese.append((x,y))
+    before = len(cheese)
     hole_in_cheese = []
     for i in slices.keys():
         locs = slices[i]
         if is_hole_in_cheese(locs):
             hole_in_cheese += locs
     cheese_disappear = []
+
+    tmp = [[0]*m for _ in range(n)]
+
     for x,y in cheese:
         flag = False
         for i in range(4):
@@ -51,6 +63,14 @@ while check():
                 flag = True
         if flag:
             cheese_disappear.append((x,y))
-            print(x,y)
+            tmp[x][y] = 1
 
-    break
+    # for i in tmp:
+    #     print(i)
+
+    for x,y in cheese_disappear:
+        a[x][y] = 0
+
+    time += 1
+print(time)
+print(before)
