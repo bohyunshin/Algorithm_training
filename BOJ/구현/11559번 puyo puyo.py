@@ -50,12 +50,6 @@ while True:
         ans += 1
     else:
         break
-
-    # for i in a:
-    #     print(i)
-    # print()
-    # if ans == 3:
-    #     break
 print(ans)
 
 """
