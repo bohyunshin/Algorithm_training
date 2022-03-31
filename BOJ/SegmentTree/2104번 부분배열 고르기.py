@@ -32,7 +32,8 @@ def submin(node, start, end, left, right):
 
 def find_ans(node, start, end):
     global ans
-    val = tree_sum[node]*tree_min[node]
+    min_val = submin(1, 0, n-1, start, end)
+    val = subsum(1, 0, n-1, start, end) *
     ans = max(val, ans)
     if start == end:
         return
