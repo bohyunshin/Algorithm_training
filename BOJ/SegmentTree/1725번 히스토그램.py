@@ -5,27 +5,19 @@ input = sys.stdin.readline
 
 def init(node, start, end):
     if start == end:
-        tree[node] = [l[start],start]
+        tree[node] = start
         return tree[node]
     left = init(node*2, start, (start+end)//2)
     right = init(node*2 + 1, (start+end)//2 + 1, end)
-    tree[node][0] = left[0] + right[0]
-    if l[left[1]] > l[right[1]]:
-        tree[node][1] = right[1]
+    if l[left] > l[right]:
+        tree[node] = right
     else:
-        tree[node][1] = left[1]
-    return tree[node][:]
-
-def subsum(node, start, end, left, right):
-    if left <= start and end <= right:
-        return tree[node][0]
-    if end < left or right < start:
-        return 0
-    return subsum(node*2, start, (start+end)//2, left, right) + subsum(node*2 + 1, (start+end)//2 + 1, end, left, right)
+        tree[node] = left
+    return tree[node]
 
 def submin(node, start, end, left, right):
     if left <= start and end <= right:
-        return tree[node][1]
+        return tree[node]
     if end < left or right < start:
         return -1
     a = submin(node*2, start, (start+end)//2, left, right)
@@ -42,19 +34,19 @@ def submin(node, start, end, left, right):
 
 def find_ans(start, end):
     idx = submin(1,0,n-1,start,end)
-    val = subsum(1,0,n-1,start,end) * l[idx]
+    val = l[idx]*(end-start+1)
     if start < idx:
         val = max(val, find_ans(start, idx-1))
     if idx < end:
         val = max(val, find_ans(idx+1, end))
     return val
 
-
-n= int(input())
+n = int(input())
 h = int(ceil(log2(n)))
-tree = [[0,1e100] for _ in range(2**(h+1))]
-l = list(map(int,input().split()))
+tree = [0]*(2**(h+1))
+l = []
+for _ in range(n):
+    l.append(int(input()))
 
 init(1, 0, n-1)
-
 print(find_ans(0,n-1))
