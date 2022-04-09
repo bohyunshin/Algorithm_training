@@ -9,16 +9,26 @@ def init(node, start, end):
     tree[node] = init(node*2, start, (start+end)//2) + init(node*2 + 1, (start+end)//2+1, end)
     return tree[node]
 
+# def query(node, start, end, k):
+#     tree[node] -= 1
+#     if start == end:
+#         # print(start+1)
+#         return start
+#     if node*2 <= tree_size-1 and tree[node*2] > k:
+#         return query(node*2, start, (start+end)//2, k)
+#     k -= tree[node*2]
+#     if node*2 + 1 <= tree_size-1 and tree[node*2 + 1] > k:
+#         return query(node*2 + 1, (start+end)//2 + 1, end, k)
+
 def query(node, start, end, k):
     tree[node] -= 1
     if start == end:
         # print(start+1)
         return start
-    if node*2 <= tree_size-1 and tree[node*2] > k:
+    if tree[node*2] > k:
         return query(node*2, start, (start+end)//2, k)
-    k -= tree[node*2]
-    if node*2 + 1 <= tree_size-1 and tree[node*2 + 1] > k:
-        return query(node*2 + 1, (start+end)//2 + 1, end, k)
+    else:
+        return query(node * 2 + 1, (start + end) // 2 + 1, end, k-tree[node*2])
 
 def update(node, start, end, index, diff=-1):
     if not (start <= index <= end):
@@ -28,20 +38,10 @@ def update(node, start, end, index, diff=-1):
         update(node*2, start, (start+end)//2, index, diff)
         update(node*2 + 1, (start+end)//2 + 1, end, index, diff)
 
-# def update(node, start, end, index):
-#     if not (start <= index <= end):
-#         return
-#     if start == end:
-#         tree[node] = 0
-#         return
-#     update(node*2, start, (start+end)//2, index)
-#     update(node*2 + 1, (start+end)//2 + 1, end, index)
-#     tree[node] -= 1
-
 n = int(input())
-h = int(ceil(log2(n)))
-tree = [0]*(2**(h+1))
-# tree = [0]*(4*n)
+# h = int(ceil(log2(n)))
+# tree = [0]*(2**(h+1))
+tree = [0]*(4*n)
 tree_size = len(tree)
 l = [0]*(n)
 
