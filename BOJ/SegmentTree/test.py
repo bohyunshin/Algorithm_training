@@ -1,46 +1,51 @@
 import sys
-import math
 
-def init(node,start,end):
-    if start==end:
-        tree[node]=1
-        return 1
+input = sys.stdin.readline
 
-    mid=(start+end)//2
-    tree[node]=init(node*2,start,mid)+init(node*2+1,mid+1,end)
-    return tree[node]
-
-def query(node,start,end,val):
-    tree[node]-=1
-
-    if start==end:
-        return start
-    mid = (start + end) // 2
-    if tree[node*2]>=val:
-        return query(node*2,start,mid,val)
-    return query(node*2+1,mid+1,end,val-tree[node*2])
-
-def update(node,start,end,indx):
-    if not start<=indx<=end:
+def func(x, y, cnt):
+    global ans
+    if y >= 10:
+        ans = min(ans, cnt)
         return
 
-    tree[node] -= 1
-    if start==end:
+    if x >= 10:
+        func(0, y+1, cnt)
         return
 
-    mid=(start+end)//2
-    update(node*2,start,mid,indx)
-    update(node*2+1,mid+1,end,indx)
+    if a[x][y] == 1:
+        for k in range(5):
+            if paper[k] == 5:
+                continue
+            if x + k >= 10 or y + k >= 10:
+                continue
 
-N=int(input())
-size=2**(math.ceil(math.log(N,2))+1)
-tree=[0 for i in range(size)]
-L=[0 for i in range(N+1)]
-init(1,1,N)
+            flag = 0
+            for i in range(x, x + k + 1):
+                for j in range(y, y + k + 1):
+                    if a[i][j] == 0:
+                        flag = 1
+                        break
+                if flag:
+                    break
 
-for i in range(1,N+1):
-    indx=query(1,1,N,int(sys.stdin.readline().rstrip())+1)
-    L[indx]=i
+            if not flag:
+                for i in range(x, x + k + 1):
+                    for j in range(y, y + k + 1):
+                        a[i][j] = 0
 
-for i in range(1,N+1):
-    print(L[i])
+                paper[k] += 1
+                func(x + k + 1, y, cnt + 1)
+                paper[k] -= 1
+
+                for i in range(x, x + k + 1):
+                    for j in range(y, y + k + 1):
+                        a[i][j] = 1
+    else:
+        func(x + 1, y, cnt)
+
+
+a = [list(map(int, input().split())) for _ in range(10)]
+paper = [0 for _ in range(5)]
+ans = sys.maxsize
+func(0, 0, 0)
+print(ans) if ans != sys.maxsize else print(-1)
