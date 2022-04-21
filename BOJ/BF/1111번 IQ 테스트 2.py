@@ -5,7 +5,7 @@ if n == 1:
     print('A')
 elif n == 2:
     if data[0] == data[1]:
-        print(data[0]) ""
+        print(data[0])
     else:
         print('A')
 else:
