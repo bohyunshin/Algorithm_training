@@ -1,5 +1,3 @@
-from math import log2, ceil
-
 def init(node, start, end):
     if start == end:
         tree[node] = 1
@@ -23,8 +21,6 @@ def update(node, start, end, index):
 
 n = int(input())
 l = list(map(int,input().split()))
-# h = int(ceil(log2(n)))
-# tree = [0]*(2**(h+1))
 tree = [0]*(4*n)
 ans = [0]*n
 init(1,0,n-1)
